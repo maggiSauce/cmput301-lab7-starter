@@ -8,15 +8,22 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import androidx.test.espresso.intent.Intents;
+import static org.hamcrest.CoreMatchers.anything;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+
+import android.widget.ListView;
 
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +33,16 @@ import org.junit.runner.RunWith;
 public class MainActivityTest {
     @Rule
     public ActivityScenarioRule<MainActivity> scenario = new ActivityScenarioRule<MainActivity>(MainActivity.class);
+
+    @Before
+    public void setup() {
+        Intents.init();
+    }
+
+    @After
+    public void tearDown() {
+        Intents.release();
+    }
 
     @Test
     public void testAddCity() {
@@ -72,5 +89,72 @@ public class MainActivityTest {
         // If this data matches the text we provided then Voila! Our test should pass
         // You can also use anything() in place of is(instanceOf(String.class))
         onData(is(instanceOf(String.class))).inAdapterView(withId(R.id.city_list)).atPosition(0).check(matches((withText("Edmonton"))));
+    }
+
+    @Test
+    public void testSwitchActivity() {
+        // Click on Add City button
+        onView(withId(R.id.button_add)).perform(click());
+
+        // Type "Edmonton" in the editText
+        onView(withId(R.id.editText_name)).perform(ViewActions.typeText("Edmonton"));
+
+        // Click on Confirm
+        onView(withId(R.id.button_confirm)).perform(click());
+
+        // Click first item in ListView
+        onData(anything())
+                .inAdapterView(withId(R.id.city_list))
+                .atPosition(0)
+                .perform(click());
+
+        // check that the back button is in the activity (unique to the showcityactivity
+        onView(withId(R.id.btn_returnToMain)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testShowCityName() {
+
+        // Click on Add City button
+        onView(withId(R.id.button_add)).perform(click());
+
+        // Type "Edmonton" in the editText
+        onView(withId(R.id.editText_name)).perform(ViewActions.typeText("Edmonton"));
+
+        // Click on Confirm
+        onView(withId(R.id.button_confirm)).perform(click());
+
+        // Click first item in ListView
+        onData(anything())
+                .inAdapterView(withId(R.id.city_list))
+                .atPosition(0)
+                .perform(click());
+
+        // Check if text "Edmonton" is matched with any of the text displayed on the screen
+        onView(withText("Edmonton")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testBackButton() {
+        // Click on Add City button
+        onView(withId(R.id.button_add)).perform(click());
+
+        // Type "Edmonton" in the editText
+        onView(withId(R.id.editText_name)).perform(ViewActions.typeText("Edmonton"));
+
+        // Click on Confirm
+        onView(withId(R.id.button_confirm)).perform(click());
+
+        // Click first item in ListView
+        onData(anything())
+                .inAdapterView(withId(R.id.city_list))
+                .atPosition(0)
+                .perform(click());
+
+        onView(withId(R.id.btn_returnToMain)).perform(click());
+
+        // check if the city_list is displayed
+        onView(withId(R.id.city_list))
+                .check(matches(isDisplayed()));
     }
 }

@@ -4,7 +4,7 @@ plugins {
 
 android {
     namespace = "com.example.androiduitesting"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.androiduitesting"
@@ -32,6 +32,8 @@ android {
 }
 
 dependencies {
+    implementation("androidx.activity:activity:1.12.4")
+    implementation("androidx.test.espresso:espresso-intents:3.7.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
